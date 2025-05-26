@@ -1,0 +1,90 @@
+Tests: builtin-tests
+Depends: ca-certificates, passt, slirp4netns, uidmap, @, @builddeps@
+Restrictions: allow-stderr, needs-root
+
+Tests: podman-info
+Architecture: amd64
+Depends: @, @recommends@
+Restrictions: allow-stderr, isolation-machine, needs-root
+
+Tests: podman-hello-world
+Architecture: amd64
+Depends: @, @recommends@
+Restrictions: allow-stderr, isolation-machine, needs-internet, skippable
+
+Tests: system-tests
+Architecture: amd64
+Depends: aardvark-dns,
+         apache2-utils,
+         bats,
+         build-essential,
+         containernetworking-plugins,
+         curl,
+         file,
+         ginkgo,
+         git,
+         golang-go,
+         iproute2,
+         iptables,
+         jq,
+         libsystemd-dev,
+         ncat,
+         netavark,
+         passt,
+         python3-yaml,
+         skopeo,
+         slirp4netns,
+         socat,
+         xfsprogs,
+         @,
+         @recommends@
+Restrictions: allow-stderr,
+              isolation-machine,
+              needs-internet,
+              needs-root,
+              rw-build-tree,
+              skippable
+
+# Do not add @recommends@, seem to run into https://bugs.debian.org/1088235
+Tests: integration-tests-rootful
+Architecture: amd64
+Depends: aardvark-dns,
+         apache2-utils,
+         ca-certificates,
+         catatonit,
+         dbus-user-session,
+         gnupg2,
+         iproute2,
+         iptables,
+         jq,
+         ncat,
+         netavark,
+         passt,
+         skopeo,
+         slirp4netns,
+         uidmap,
+         @,
+         @builddeps@
+Restrictions: allow-stderr, isolation-machine, needs-internet, needs-root, rw-build-tree,
+
+Tests: integration-tests-rootless
+Architecture: amd64
+Depends: aardvark-dns,
+         apache2-utils,
+         ca-certificates,
+         catatonit,
+         containers-storage,
+         dbus-user-session,
+         gnupg2,
+         iproute2,
+         iptables,
+         jq,
+         ncat,
+         netavark,
+         passt,
+         skopeo,
+         slirp4netns,
+         uidmap,
+         @,
+         @builddeps@
+Restrictions: allow-stderr, isolation-machine, needs-internet, rw-build-tree, needs-sudo

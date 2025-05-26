@@ -1,0 +1,111 @@
+From: Matt Heon <mheon@redhat.com>
+Date: Fri, 14 Mar 2025 09:37:54 -0400
+Subject: Fix a potential deadlock during `podman cp`
+
+Have one function without a `defer lock.unlock()` as one of the
+commands in it calls a function that also takes the same lock,
+so the unlock has to happen prior to function completion.
+Unfortunately, this is prone to errors, like the one here: I
+missed a case, and we could return without unlocking, causing a
+deadlock later in the cleanup code as we tried to take the same
+lock again.
+
+Refactor the command to use `defer unlock()` to simplify and
+avoid any further errors of this type.
+
+Introduced by e66b788a514fb8df2c8b8d3c000e0d543bbd60df - this
+should be included in any backports of that commit.
+
+Fixes #25585
+
+Signed-off-by: Matt Heon <mheon@redhat.com>
+---
+ libpod/container_copy_common.go     |  7 ++-----
+ libpod/container_internal_common.go |  4 ++++
+ test/e2e/cp_test.go                 | 22 +++++++++-------------
+ 3 files changed, 15 insertions(+), 18 deletions(-)
+
+diff --git a/libpod/container_copy_common.go b/libpod/container_copy_common.go
+index 0553ced..8d21c0f 100644
+--- a/libpod/container_copy_common.go
++++ b/libpod/container_copy_common.go
+@@ -160,10 +160,10 @@ func (c *Container) copyFromArchive(path string, chown, noOverwriteDirNonDir boo
+ 			// populated the volume and that will block a future
+ 			// copy-up.
+ 			volume.lock.Lock()
++			defer volume.lock.Unlock()
+ 
+ 			if err := volume.update(); err != nil {
+ 				logrus.Errorf("Unable to update volume %s status: %v", volume.Name(), err)
+-				volume.lock.Unlock()
+ 				return
+ 			}
+ 
+@@ -172,15 +172,12 @@ func (c *Container) copyFromArchive(path string, chown, noOverwriteDirNonDir boo
+ 				volume.state.CopiedUp = true
+ 				if err := volume.save(); err != nil {
+ 					logrus.Errorf("Unable to save volume %s state: %v", volume.Name(), err)
+-					volume.lock.Unlock()
+ 					return
+ 				}
+ 
+-				volume.lock.Unlock()
+-
+ 				for _, namedVol := range c.config.NamedVolumes {
+ 					if namedVol.Name == volume.Name() {
+-						if err := c.fixVolumePermissions(namedVol); err != nil {
++						if err := c.fixVolumePermissionsUnlocked(namedVol, volume); err != nil {
+ 							logrus.Errorf("Unable to fix volume %s permissions: %v", volume.Name(), err)
+ 						}
+ 						return
+diff --git a/libpod/container_internal_common.go b/libpod/container_internal_common.go
+index 77eb280..ac9e41a 100644
+--- a/libpod/container_internal_common.go
++++ b/libpod/container_internal_common.go
+@@ -2916,6 +2916,10 @@ func (c *Container) fixVolumePermissions(v *ContainerNamedVolume) error {
+ 	vol.lock.Lock()
+ 	defer vol.lock.Unlock()
+ 
++	return c.fixVolumePermissionsUnlocked(v, vol)
++}
++
++func (c *Container) fixVolumePermissionsUnlocked(v *ContainerNamedVolume, vol *Volume) error {
+ 	// The volume may need a copy-up. Check the state.
+ 	if err := vol.update(); err != nil {
+ 		return err
+diff --git a/test/e2e/cp_test.go b/test/e2e/cp_test.go
+index 5c543c3..028620e 100644
+--- a/test/e2e/cp_test.go
++++ b/test/e2e/cp_test.go
+@@ -280,22 +280,18 @@ RUN chown 9999:9999 %s`, ALPINE, ctrVolPath, ctrVolPath)
+ 		defer srcFile.Close()
+ 		defer os.Remove(srcFile.Name())
+ 
+-		volCreate := podmanTest.Podman([]string{"volume", "create", volName})
+-		volCreate.WaitWithDefaultTimeout()
+-		Expect(volCreate).Should(ExitCleanly())
++		_ = podmanTest.PodmanExitCleanly("volume", "create", volName)
++		_ = podmanTest.PodmanExitCleanly("create", "--name", ctrName, "-v", fmt.Sprintf("%s:%s", volName, ctrVolPath), imgName, "sh")
+ 
+-		ctrCreate := podmanTest.Podman([]string{"create", "--name", ctrName, "-v", fmt.Sprintf("%s:%s", volName, ctrVolPath), imgName, "sh"})
+-		ctrCreate.WaitWithDefaultTimeout()
+-		Expect(ctrCreate).To(ExitCleanly())
++		_ = podmanTest.PodmanExitCleanly("cp", srcFile.Name(), fmt.Sprintf("%s:%s", ctrName, ctrVolPath))
+ 
+-		cp := podmanTest.Podman([]string{"cp", srcFile.Name(), fmt.Sprintf("%s:%s", ctrName, ctrVolPath)})
+-		cp.WaitWithDefaultTimeout()
+-		Expect(cp).To(ExitCleanly())
+-
+-		ls := podmanTest.Podman([]string{"run", "-v", fmt.Sprintf("%s:%s", volName, ctrVolPath), ALPINE, "ls", "-al", ctrVolPath})
+-		ls.WaitWithDefaultTimeout()
+-		Expect(ls).To(ExitCleanly())
++		ls := podmanTest.PodmanExitCleanly("run", "-v", fmt.Sprintf("%s:%s", volName, ctrVolPath), ALPINE, "ls", "-al", ctrVolPath)
+ 		Expect(ls.OutputToString()).To(ContainSubstring("9999 9999"))
+ 		Expect(ls.OutputToString()).To(ContainSubstring(filepath.Base(srcFile.Name())))
++
++		// Test for #25585
++		_ = podmanTest.PodmanExitCleanly("rm", ctrName)
++		_ = podmanTest.PodmanExitCleanly("create", "--name", ctrName, "-v", fmt.Sprintf("%s:%s", volName, ctrVolPath), imgName, "sh")
++		_ = podmanTest.PodmanExitCleanly("cp", srcFile.Name(), fmt.Sprintf("%s:%sfile2", ctrName, ctrVolPath))
+ 	})
+ })
