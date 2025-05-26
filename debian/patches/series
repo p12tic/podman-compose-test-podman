@@ -1,8 +1,0 @@
-system-goimports.patch
-Revert-to-docker-26.patch
-pkg-machine-platform.patch
-gopsutil-v4.patch
-tests-unit-skips.patch
-tests-system-skips.patch
-tests-integration-skips.patch
-backport-Fix-a-potential-deadlock-during-podman-cp.patch
