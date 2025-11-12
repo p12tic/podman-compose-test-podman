@@ -69,6 +69,10 @@ execute_after_dh_auto_configure:
 
 override_dh_auto_build:
 	$(MAKE) docs docker-docs GOMD2MAN=/usr/bin/go-md2man
+	cp ./vendor/github.com/containers/storage/VERSION ./_output/src/github.com/containers/podman/vendor/github.com/containers/storage
+	cp ./vendor/google.golang.org/protobuf/internal/editiondefaults/editions_defaults.binpb ./_output/src/github.com/containers/podman/vendor/google.golang.org/protobuf/internal/editiondefaults
+	mkdir ./_output/src/github.com/containers/podman/vendor/github.com/containers/buildah/internal/mkcw/embed
+	cp ./vendor/github.com/containers/buildah/internal/mkcw/embed/entrypoint_amd64.gz ./_output/src/github.com/containers/podman/vendor/github.com/containers/buildah/internal/mkcw/embed/entrypoint_amd64.gz
 	DH_GOLANG_BUILDPKG="github.com/containers/podman/cmd/podman" \
 	dh_auto_build -v  --builddirectory=_output -- -tags "$(BUILDTAGS_REMOTE)" \
           -ldflags "-X main.buildInfo=$(DEB_VERSION)"
