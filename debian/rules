@@ -11,6 +11,7 @@ export DEB_BUILD_MAINT_OPTIONS=optimize=-lto
 export GO111MODULE=off
 
 export DH_GOLANG_GO_GENERATE := 1
+export DH_GOLANG_INSTALL_ALL := 1
 
 export DH_GOLANG_INSTALL_EXTRA := cni utils/testdata test/e2e/testdata pkg/trust/testdata
 
