@@ -1,3 +1,9 @@
+libpod (5.0.3+compose1-1) unstable; urgency=medium
+
+  * Test build
+
+  -- Monika Kairaitytė <monika@kibit.lt>  Wed, 1 Jan 2025 00:00:00 +0000
+
 libpod (5.0.3+ds1-5) unstable; urgency=medium
 
   * Team Upload.
