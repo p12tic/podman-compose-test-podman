@@ -1017,6 +1017,7 @@ clean-binaries: ## Remove platform/architecture specific binary files
 .PHONY: clean
 clean: clean-binaries ## Clean all make artifacts
 	rm -rf \
+		_out \
 		_output \
 		$(wildcard podman-*.msi) \
 		$(wildcard podman-remote*.zip) \
