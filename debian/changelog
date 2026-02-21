@@ -1,17 +1,8 @@
-libpod (5.0.3+compose1-1) oracular; urgency=medium
+libpod (5.0.3+compose1-1) unstable; urgency=medium
 
   * Test build
 
- -- Monika  Kairaitytė <monika@kibit.lt>  Wed, 1 Jan 2025 00:00:00 +0000
-
-libpod (5.0.3+ds1-5ubuntu1) oracular; urgency=medium
-
-  * Set XDG_CONFIG_HOME to builddir to fix FTBFS with golang-1.23
-    (LP: #2077610)
-  * Drop d/p/downgrade-checkpoint-restore-criu.patch
-    golang-github-checkpoint-restore-go-criu-dev is bumped to v7
-
- -- Shengjing Zhu <shengjing.zhu@canonical.com>  Thu, 22 Aug 2024 17:26:19 +0800
+  -- Monika Kairaitytė <monika@kibit.lt>  Wed, 1 Jan 2025 00:00:00 +0000
 
 libpod (5.0.3+ds1-5) unstable; urgency=medium
 

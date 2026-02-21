@@ -2,8 +2,7 @@ Source: libpod
 Section: admin
 Priority: optional
 Standards-Version: 4.6.2
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-XSBC-Original-Maintainer: Debian Go Packaging Team <pkg-go-maintainers@lists.alioth.debian.org>
+Maintainer: Debian Go Packaging Team <pkg-go-maintainers@lists.alioth.debian.org>
 Uploaders:
  Dmitry Smirnov <onlyjob@debian.org>,
  Reinhard Tartler <siretart@tauware.de>,
@@ -14,7 +13,7 @@ Build-Depends:
  conmon,
  dh-golang,
  go-md2man,
- golang-dbus-dev,
+ golang-go,
  libapparmor-dev,
  libbtrfs-dev,
  libdevmapper-dev,

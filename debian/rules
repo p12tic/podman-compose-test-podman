@@ -11,6 +11,7 @@ export DEB_BUILD_MAINT_OPTIONS=optimize=-lto
 export GO111MODULE=off
 
 export DH_GOLANG_GO_GENERATE := 1
+export DH_GOLANG_INSTALL_ALL := 1
 
 export DH_GOLANG_INSTALL_EXTRA := cni utils/testdata test/e2e/testdata pkg/trust/testdata
 
@@ -47,8 +48,6 @@ export DH_GOLANG_TEST_EXCLUDES := $(DH_GOLANG_EXCLUDES) \
 
 export HOME=$(CURDIR)/debian/tmp
 
-export XDG_CONFIG_HOME=$(CURDIR)/_out/xdg-config-home
-
 ## https://podman.io/getting-started/installation#build-tags
 BUILDTAGS := apparmor,seccomp,selinux,systemd,libsubid
 BUILDTAGS_REMOTE := remote,exclude_graphdriver_btrfs,btrfs_noversion,exclude_graphdriver_devicemapper,containers_image_openpgp
@@ -69,10 +68,6 @@ execute_after_dh_auto_configure:
 
 override_dh_auto_build:
 	$(MAKE) docs docker-docs GOMD2MAN=/usr/bin/go-md2man
-	cp ./vendor/github.com/containers/storage/VERSION ./_output/src/github.com/containers/podman/vendor/github.com/containers/storage
-	cp ./vendor/google.golang.org/protobuf/internal/editiondefaults/editions_defaults.binpb ./_output/src/github.com/containers/podman/vendor/google.golang.org/protobuf/internal/editiondefaults
-	mkdir ./_output/src/github.com/containers/podman/vendor/github.com/containers/buildah/internal/mkcw/embed
-	cp ./vendor/github.com/containers/buildah/internal/mkcw/embed/entrypoint_amd64.gz ./_output/src/github.com/containers/podman/vendor/github.com/containers/buildah/internal/mkcw/embed/entrypoint_amd64.gz
 	DH_GOLANG_BUILDPKG="github.com/containers/podman/cmd/podman" \
 	dh_auto_build -v  --builddirectory=_output -- -tags "$(BUILDTAGS_REMOTE)" \
           -ldflags "-X main.buildInfo=$(DEB_VERSION)"

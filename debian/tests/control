@@ -1,0 +1,16 @@
+Test-Command: podman info
+Restrictions: needs-root, allow-stderr
+
+Tests: builtin-tests
+Depends:
+ @builddeps@,
+ @,
+ buildah,
+ catatonit,
+ containers-storage,
+ dbus-user-session,
+ fuse-overlayfs,
+ iptables,
+ slirp4netns,
+ uidmap,
+Restrictions: allow-stderr, needs-root, flaky
