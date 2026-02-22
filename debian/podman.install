@@ -1,0 +1,7 @@
+completions/fish/podman.fish       /usr/share/fish/vendor_completions.d
+completions/zsh/_podman            /usr/share/zsh/vendor-completions
+usr/bin/podman                     /usr/bin
+usr/bin/podman-testing             /usr/libexec/podman/
+usr/bin/quadlet                    /usr/libexec/podman/
+usr/bin/rootlessport               /usr/libexec/podman/
+usr/lib/systemd                    /usr/lib/
