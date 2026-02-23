@@ -1,9 +1,0 @@
-0001-Revert-vendor-update-github.com-docker-docker-to-v28.patch
-0002-Revert-fix-deprecated-docker-v28-types.patch
-0003-Revert-vendor-update-docker-v28-and-c-common-image.patch
-pkg-machine-platform.patch
-gopsutil-v4.patch
-tests-system-skips.patch
-tests-integration-skips.patch
-0006-Avoid-dependency-on-conmon-runner-config.patch
-0007-Allow-version-of-buildah-to-be-slightly-off.patch
