@@ -915,11 +915,8 @@ install.man:
 	install ${SELINUXOPT} -d -m 755 $(DESTDIR)$(MANDIR)/man1
 	install ${SELINUXOPT} -d -m 755 $(DESTDIR)$(MANDIR)/man5
 	install ${SELINUXOPT} -d -m 755 $(DESTDIR)$(MANDIR)/man7
-	install ${SELINUXOPT} -m 644 $(filter %.1,$(MANPAGES_DEST)) $(DESTDIR)$(MANDIR)/man1
 	install ${SELINUXOPT} -m 644 docs/source/markdown/links/*1 $(DESTDIR)$(MANDIR)/man1
-	install ${SELINUXOPT} -m 644 $(filter %.5,$(MANPAGES_DEST)) $(DESTDIR)$(MANDIR)/man5
 	install ${SELINUXOPT} -m 644 docs/source/markdown/links/*5 $(DESTDIR)$(MANDIR)/man5
-	install ${SELINUXOPT} -m 644 $(filter %.7,$(MANPAGES_DEST)) $(DESTDIR)$(MANDIR)/man7
 
 .PHONY: install.completions
 install.completions:
@@ -951,9 +948,7 @@ install.docker:
 .PHONY: install.docker-docs
 install.docker-docs:
 	install ${SELINUXOPT} -d -m 755 $(DESTDIR)$(MANDIR)/man1
-	install ${SELINUXOPT} -m 644 docs/build/man/docker*.1 -t $(DESTDIR)$(MANDIR)/man1
 	install ${SELINUXOPT} -d -m 755 $(DESTDIR)$(MANDIR)/man5
-	install ${SELINUXOPT} -m 644 docs/build/man/docker*.5 -t $(DESTDIR)$(MANDIR)/man5
 
 .PHONY: install.docker-full
 install.docker-full: install.docker install.docker-docs

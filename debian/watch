@@ -1,0 +1,8 @@
+Version: 5
+
+Template: Github
+Owner: containers
+Project: podman
+Dversion-Mangle: auto
+Uversion-Mangle: auto
+Repacksuffix: +ds2
